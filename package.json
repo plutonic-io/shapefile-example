@@ -1,0 +1,22 @@
+{
+  "name": "shapefile-example",
+  "version": "1.0.0",
+  "description": "Basic example loading shapefiles atop Google Maps with the shapefile-js package.",
+  "main": "app.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/plutonic-io/shapefile-example.git"
+  },
+  "author": "Jeremy Malczyk",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/plutonic-io/shapefile-example/issues"
+  },
+  "homepage": "https://github.com/plutonic-io/shapefile-example#readme",
+  "dependencies": {
+    "express": "^4.18.1"
+  }
+}
