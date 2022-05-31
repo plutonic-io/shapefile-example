@@ -16,13 +16,6 @@ body {
   padding: 0;
 }
 
-input {
-  position: absolute;
-  top: 100px;
-  left: 10px;
-  z-index: 10000;
-}
-
 .infokey {
   padding: 2px;
 }
