@@ -6,9 +6,7 @@ function initMap() {
     zoom: 8,
   });
 }
-
-async function readFile(fileReadEvent) {
-  let geojson = await loadShp(fileReadEvent.target.result)
+function addLayer(geojson) {
   let layer = new google.maps.Data();
   let bounds = new google.maps.LatLngBounds();
   layer.addGeoJson(geojson);
@@ -17,18 +15,48 @@ async function readFile(fileReadEvent) {
   map.fitBounds(bounds);
 }
 
-function loadFile(fileInputEvent) {
-  let reader = new FileReader();
-  let file = fileInputEvent.target.files[0];
-  reader.onload = readFile;
-  reader.readAsArrayBuffer(file);
+function readFileAsArrayBuffer(file){
+  return new Promise(function(resolve,reject){
+      let fr = new FileReader();
+
+      fr.onload = function(){
+          resolve({name: file.name, arrayBuffer: fr.result});
+      };
+
+      fr.onerror = function(){
+          reject(fr);
+      };
+
+      fr.readAsArrayBuffer(file);
+  });
 }
 
-function loadShp(data) {
-  return shp.parseZip(data);
+
+function loadShp(files, callback) {
+  return new Promise(function(resolve, reject) {
+    let readers = [];
+    for(let i=0;i<files.length;i++) {
+      readers.push(readFileAsArrayBuffer(files[i]))
+    }
+    Promise.all(readers).then(async (buffers) => {
+      let geojson;
+      if(buffers.length > 1) {
+        const enc = new TextDecoder("utf-8");
+        geojson = await shp.combine([
+          shp.parseShp(buffers.find(b=>b.name.endsWith('.shp')).arrayBuffer,
+                       enc.decode(buffers.find(b=>b.name.endsWith('.prj')).arrayBuffer)),
+          shp.parseDbf(buffers.find(b=>b.name.endsWith('.dbf')).arrayBuffer)
+        ]);
+      } else if(buffers.find(b=>b.name.endsWith('.zip'))) {
+        geojson = await shp.parseZip(buffers.find(b=>b.name.endsWith('.zip')).arrayBuffer)
+      }
+      resolve(geojson);
+    });
+  });
 }
 
-window.loadFile = loadFile;
+window.loadShp = loadShp;
+window.addLayer = addLayer;
 window.initMap = initMap;
 
 
