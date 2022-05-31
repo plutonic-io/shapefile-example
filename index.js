@@ -1,4 +1,6 @@
 let map;
+let infowindow;
+let layer;
 
 function initMap() {
   map = new google.maps.Map(document.getElementById("map"), {
@@ -7,8 +9,47 @@ function initMap() {
   });
 }
 function addLayer(geojson) {
-  let layer = new google.maps.Data();
   let bounds = new google.maps.LatLngBounds();
+  if(infowindow) {
+    infowindow.close()
+  } else {
+    infowindow = new google.maps.InfoWindow();
+  }
+  if(layer) {
+    layer.setMap(null);
+  } 
+  layer = new google.maps.Data();
+  
+  
+  infowindow.close()
+  layer.setStyle({strokeWeight: 1, fillOpacity: 0});
+  layer.addListener('click', 
+                    function(f) {
+                      infowindow.close();
+                      let content = '<div>';
+                      f.feature.forEachProperty((val,key) => {
+                        content += `<div>
+                                      <strong class='infokey'>${key}</strong>
+                                      <span class='infoval'>${val}</span>
+                                    </div>`;
+                      });
+                      content += '</div>';
+                      infowindow.setContent(content);
+                      infowindow.open({
+                        anchor: new google.maps.Marker({position: f.latLng, 
+                                                        map:map,
+                                                        icon: {
+                                                          path: google.maps.SymbolPath.CIRCLE,
+                                                          scale: 0
+                                                        }}),
+                        map: map,
+                        shouldFocus: true,
+                      });
+                      
+
+                      
+                      console.log(f)
+                  });
   layer.addGeoJson(geojson);
   layer.setMap(map);
   layer.forEach((f) => f.getGeometry().forEachLatLng((latLng) => bounds.extend(latLng)));

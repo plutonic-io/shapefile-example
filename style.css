@@ -22,3 +22,10 @@ input {
   left: 10px;
   z-index: 10000;
 }
+
+.infokey {
+  padding: 2px;
+}
+.infoval {
+  padding: 2px;
+}
