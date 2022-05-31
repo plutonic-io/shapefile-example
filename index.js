@@ -1,13 +1,26 @@
-let map;
+
+// Globals for the Google Map.
+let map; 
 let infowindow;
 let layer;
 
+/** 
+ * Initialize the Google map
+ */
 function initMap() {
   map = new google.maps.Map(document.getElementById("map"), {
     center: { lat: 41.6303, lng: -73.3107 },
     zoom: 8,
   });
 }
+
+/**
+ * Adds a GeoJSON google.maps.Data layer and binds an infowindow to 
+ * feature click events.
+ * 
+ * @param {FeatureCollection} geojson 
+ * 
+ */
 function addLayer(geojson) {
   let bounds = new google.maps.LatLngBounds();
   if (infowindow) {
@@ -27,9 +40,9 @@ function addLayer(geojson) {
     let content = "<div>";
     f.feature.forEachProperty((val, key) => {
       content += `<div>
-                                      <strong class='infokey'>${key}</strong>
-                                      <span class='infoval'>${val}</span>
-                                    </div>`;
+                    <strong class='infokey'>${key}</strong>
+                    <span class='infoval'>${val}</span>
+                  </div>`;
     });
     content += "</div>";
     infowindow.setContent(content);
@@ -56,6 +69,14 @@ function addLayer(geojson) {
   map.fitBounds(bounds);
 }
 
+/** 
+ * Helper function to read files into ArrayBuffers 
+ * 
+ * @param {FeatureCollection} geojson 
+ * 
+ * @returns Promise<{name:str, arrayBuffer:ArrayBuffer}> 
+ * 
+ */
 function readFileAsArrayBuffer(file) {
   return new Promise(function (resolve, reject) {
     let fr = new FileReader();
@@ -71,7 +92,17 @@ function readFileAsArrayBuffer(file) {
     fr.readAsArrayBuffer(file);
   });
 }
-
+/**
+ * Load a shapefile from a list of files or single zip archive. Loads 
+ * what it can from what is provided, and reprojects to WGS84 is a .prj 
+ * file is present in the FileList. Returns a Promise that resolves to a 
+ * GeoJSON FeatureCollection, with properties from the .dbf file, if it
+ * was included in the list or zip archive. 
+ * 
+ * @param {FileList} files Files selected via a file input form control.
+ * 
+ * @returns Promise<FeatureCollection>
+ */
 function loadShp(files) {
   return new Promise(function (resolve, reject) {
     let readers = [];
@@ -96,7 +127,7 @@ function loadShp(files) {
             shp.parseDbf(dbf),
           ]);
         } else if (dbf) {
-          console.warn('Warning: No coordinate reference system provided.');
+          console.warn("Warning: No coordinate reference system provided.");
           geojson = await shp.combine([
             shp.parseShp(
               buffers.find((b) => b.name.endsWith(".shp")).arrayBuffer
@@ -104,32 +135,37 @@ function loadShp(files) {
             shp.parseDbf(dbf),
           ]);
         } else if (proj) {
-          console.warn('Warning: No attribute information provided.');
+          console.warn("Warning: No attribute information provided.");
           geomArray = await shp.parseShp(
             buffers.find((b) => b.name.endsWith(".shp")).arrayBuffer,
             proj
           );
-          
         } else if (buffers.find((b) => b.name.endsWith(".shp"))) {
-          console.warn('Warning: No attribute information or coordinate reference system provided.');
-          geomArray=  await shp.parseShp(buffers.find((b) => b.name.endsWith(".shp")).arrayBuffer)
+          console.warn(
+            "Warning: No attribute information or coordinate reference system provided."
+          );
+          geomArray = await shp.parseShp(
+            buffers.find((b) => b.name.endsWith(".shp")).arrayBuffer
+          );
         } else {
           reject("No shp file found.");
         }
       } else if (buffers[0].name.endsWith(".zip")) {
         geojson = await shp.parseZip(buffers[0].readFileAsArrayBuffer);
       } else if (buffers[0].name.endsWith(".shp")) {
-        console.warn('Warning: No attribute information or coordinate reference system provided.');
+        console.warn(
+          "Warning: No attribute information or coordinate reference system provided."
+        );
         geomArray = await shp.parseShp(buffers[0].arrayBuffer);
       } else {
         reject("No shp file found.");
       }
       geojson = geojson || {
-        "type": "FeatureCollection", 
-        "features": geomArray.map((g)=> {
-          return {"type" : "Feature", "geometry" : g, "properties" : {}}
-        })
-      }
+        type: "FeatureCollection",
+        features: geomArray.map((g) => {
+          return { type: "Feature", geometry: g, properties: {} };
+        }),
+      };
       resolve(geojson);
     });
   });
