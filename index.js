@@ -1,4 +1,12 @@
 
+/**
+ * 
+ * Basic example using the shapefile-js package to load shapefiles
+ * in memory and add features to a Google Maps v3 map. See the docs
+ * at https://github.com/calvinmetcalf/shapefile-js for more information.
+ * 
+ */
+
 // Globals for the Google Map.
 let map; 
 let infowindow;
