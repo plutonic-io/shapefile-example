@@ -72,7 +72,7 @@ function readFileAsArrayBuffer(file) {
   });
 }
 
-function loadShp(files, callback) {
+function loadShp(files) {
   return new Promise(function (resolve, reject) {
     let readers = [];
     for (let i = 0; i < files.length; i++) {
