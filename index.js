@@ -79,24 +79,56 @@ function loadShp(files) {
       readers.push(readFileAsArrayBuffer(files[i]));
     }
     Promise.all(readers).then(async (buffers) => {
-      let geojson;
+      let geojson, geomArray;
       if (buffers.length > 1) {
-        const enc = new TextDecoder("utf-8");
-        geojson = await shp.combine([
-          shp.parseShp(
+        const enc = new TextDecoder("utf-8"),
+          projBuffer = buffers.find((b) => b.name.endsWith(".prj")),
+          proj = projBuffer ? enc.decode(projBuffer.arrayBuffer) : null,
+          dbfBuffer = buffers.find((b) => b.name.endsWith(".dbf")),
+          dbf = dbfBuffer ? dbfBuffer.arrayBuffer : null;
+
+        if (dbf && proj) {
+          geojson = await shp.combine([
+            shp.parseShp(
+              buffers.find((b) => b.name.endsWith(".shp")).arrayBuffer,
+              proj
+            ),
+            shp.parseDbf(dbf),
+          ]);
+        } else if (dbf) {
+          console.warn('Warning: No coordinate reference system provided.');
+          geojson = await shp.combine([
+            shp.parseShp(
+              buffers.find((b) => b.name.endsWith(".shp")).arrayBuffer
+            ),
+            shp.parseDbf(dbf),
+          ]);
+        } else if (proj) {
+          console.warn('Warning: No attribute information provided.');
+          geomArray = await shp.parseShp(
             buffers.find((b) => b.name.endsWith(".shp")).arrayBuffer,
-            enc.decode(buffers.find((b) => b.name.endsWith(".prj")).arrayBuffer)
-          ),
-          shp.parseDbf(
-            buffers.find((b) => b.name.endsWith(".dbf")).arrayBuffer
-          ),
-        ]);
-      } else if (buffers.find((b) => b.name.endsWith(".zip"))) {
-        geojson = await shp.parseZip(
-          buffers.find((b) => b.name.endsWith(".zip")).arrayBuffer
-        );
+            proj
+          );
+          
+        } else if (buffers.find((b) => b.name.endsWith(".shp"))) {
+          console.warn('Warning: No attribute information or coordinate reference system provided.');
+          geomArray=  await shp.parseShp(buffers.find((b) => b.name.endsWith(".shp")).arrayBuffer)
+        } else {
+          reject("No shp file found.");
+        }
+      } else if (buffers[0].name.endsWith(".zip")) {
+        geojson = await shp.parseZip(buffers[0].readFileAsArrayBuffer);
+      } else if (buffers[0].name.endsWith(".shp")) {
+        console.warn('Warning: No attribute information or coordinate reference system provided.');
+        geomArray = await shp.parseShp(buffers[0].arrayBuffer);
       } else {
-        reject('No valid files.')
+        reject("No shp file found.");
+      }
+      geojson = geojson || {
+        "type": "FeatureCollection", 
+        "features": geomArray.map((g)=> {
+          return {"type" : "Feature", "geometry" : g, "properties" : {}}
+        })
       }
       resolve(geojson);
     });
