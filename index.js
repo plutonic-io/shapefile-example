@@ -95,6 +95,8 @@ function loadShp(files, callback) {
         geojson = await shp.parseZip(
           buffers.find((b) => b.name.endsWith(".zip")).arrayBuffer
         );
+      } else {
+        reject('No valid files.')
       }
       resolve(geojson);
     });
