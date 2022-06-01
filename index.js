@@ -159,7 +159,7 @@ function loadShp(files) {
           reject("No shp file found.");
         }
       } else if (buffers[0].name.endsWith(".zip")) {
-        geojson = await shp.parseZip(buffers[0].readFileAsArrayBuffer);
+        geojson = await shp.parseZip(buffers[0].arrayBuffer);
       } else if (buffers[0].name.endsWith(".shp")) {
         console.warn(
           "Warning: No attribute information or coordinate reference system provided."
