@@ -7,13 +7,15 @@
  * 
  */
 
-// Globals for the Google Map.
+/** 
+ * Global variables for the Google Map.
+ */
 let map; 
-let infowindow;
-let layer;
+let infowindow; 
+let datalayer;
 
 /** 
- * Initialize the Google map
+ * Function to initialize the Google map once the API is ready.
  */
 function initMap() {
   map = new google.maps.Map(document.getElementById("map"), {
@@ -23,27 +25,27 @@ function initMap() {
 }
 
 /**
- * Adds a GeoJSON google.maps.Data layer and binds an infowindow to 
+ * Adds a GeoJSON google.maps.Data datalayer and binds an infowindow to 
  * feature click events.
  * 
  * @param {FeatureCollection} geojson 
  * 
  */
-function addLayer(geojson) {
+function addDataLayer(geojson) {
   let bounds = new google.maps.LatLngBounds();
   if (infowindow) {
     infowindow.close();
   } else {
     infowindow = new google.maps.InfoWindow();
   }
-  if (layer) {
-    layer.setMap(null);
+  if (datalayer) {
+    datalayer.setMap(null);
   }
-  layer = new google.maps.Data();
+  datalayer = new google.maps.Data();
 
   infowindow.close();
-  layer.setStyle({ strokeWeight: 1, fillOpacity: 0 });
-  layer.addListener("click", function (f) {
+  datalayer.setStyle({ strokeWeight: 1, fillOpacity: 0 });
+  datalayer.addListener("click", function (f) {
     infowindow.close();
     let content = "<div>";
     f.feature.forEachProperty((val, key) => {
@@ -69,9 +71,9 @@ function addLayer(geojson) {
 
     console.log(f);
   });
-  layer.addGeoJson(geojson);
-  layer.setMap(map);
-  layer.forEach((f) =>
+  datalayer.addGeoJson(geojson);
+  datalayer.setMap(map);
+  datalayer.forEach((f) =>
     f.getGeometry().forEachLatLng((latLng) => bounds.extend(latLng))
   );
   map.fitBounds(bounds);
@@ -82,7 +84,7 @@ function addLayer(geojson) {
  * 
  * @param {FeatureCollection} geojson 
  * 
- * @returns Promise<{name:str, arrayBuffer:ArrayBuffer}> 
+ * @returns {Promise<{name:str, arrayBuffer:ArrayBuffer}>}
  * 
  */
 function readFileAsArrayBuffer(file) {
@@ -102,14 +104,14 @@ function readFileAsArrayBuffer(file) {
 }
 /**
  * Load a shapefile from a list of files or single zip archive. Loads 
- * what it can from what is provided, and reprojects to WGS84 is a .prj 
+ * what it can from what is provided, and reprojects to WGS84 if a .prj 
  * file is present in the FileList. Returns a Promise that resolves to a 
  * GeoJSON FeatureCollection, with properties from the .dbf file, if it
  * was included in the list or zip archive. 
  * 
  * @param {FileList} files Files selected via a file input form control.
  * 
- * @returns Promise<FeatureCollection>
+ * @returns {Promise<FeatureCollection>}
  */
 function loadShp(files) {
   return new Promise(function (resolve, reject) {
@@ -180,5 +182,5 @@ function loadShp(files) {
 }
 
 window.loadShp = loadShp;
-window.addLayer = addLayer;
+window.addDataLayer = addDataLayer;
 window.initMap = initMap;
