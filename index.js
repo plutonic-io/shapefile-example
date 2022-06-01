@@ -1,10 +1,8 @@
 
 /**
- * 
  * Basic example using the shapefile-js package to load shapefiles
  * in memory and add features to a Google Maps v3 map. See the docs
  * at https://github.com/calvinmetcalf/shapefile-js for more information.
- * 
  */
 
 /** 
@@ -29,7 +27,6 @@ function initMap() {
  * feature click events.
  * 
  * @param {FeatureCollection} geojson 
- * 
  */
 function addDataLayer(geojson) {
   let bounds = new google.maps.LatLngBounds();
@@ -83,9 +80,7 @@ function addDataLayer(geojson) {
  * Helper function to read files into ArrayBuffers 
  * 
  * @param {FeatureCollection} geojson 
- * 
  * @returns {Promise<{name:str, arrayBuffer:ArrayBuffer}>}
- * 
  */
 function readFileAsArrayBuffer(file) {
   return new Promise(function (resolve, reject) {
@@ -110,7 +105,6 @@ function readFileAsArrayBuffer(file) {
  * was included in the list or zip archive. 
  * 
  * @param {FileList} files Files selected via a file input form control.
- * 
  * @returns {Promise<FeatureCollection>}
  */
 function loadShp(files) {
