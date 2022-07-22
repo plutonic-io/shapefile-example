@@ -14,7 +14,7 @@
    limitations under the License. 
 */
 /*
- * Basic ExpressJS app development server startup s
+ * Basic ExpressJS app development server startup.
  */
 const express = require('express')
 const app = express()
