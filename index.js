@@ -79,7 +79,7 @@ function addDataLayer(geojson) {
 /** 
  * Helper function to read files into ArrayBuffers 
  * 
- * @param {FeatureCollection} geojson 
+ * @param {File} file 
  * @returns {Promise<{name:str, arrayBuffer:ArrayBuffer}>}
  */
 function readFileAsArrayBuffer(file) {
