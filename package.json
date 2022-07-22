@@ -11,7 +11,7 @@
     "url": "git+https://github.com/plutonic-io/shapefile-example.git"
   },
   "author": "Jeremy Malczyk",
-  "license": "ISC",
+  "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/plutonic-io/shapefile-example/issues"
   },
