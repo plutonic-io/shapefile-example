@@ -1,3 +1,6 @@
+/*
+ * Basic ExpressJS app development server startup script.
+ */
 const express = require('express')
 const app = express()
 const port = 3000

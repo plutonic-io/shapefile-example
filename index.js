@@ -1,18 +1,17 @@
-
 /**
  * Basic example using the shapefile-js package to load shapefiles
  * in memory and add features to a Google Maps v3 map. See the docs
  * at https://github.com/calvinmetcalf/shapefile-js for more information.
  */
 
-/** 
+/**
  * Global variables for the Google Map.
  */
-let map; 
-let infowindow; 
+let map;
+let infowindow;
 let datalayer;
 
-/** 
+/**
  * Function to initialize the Google map once the API is ready.
  */
 function initMap() {
@@ -23,10 +22,10 @@ function initMap() {
 }
 
 /**
- * Adds a GeoJSON google.maps.Data datalayer and binds an infowindow to 
+ * Adds a GeoJSON google.maps.Data datalayer and binds an infowindow to
  * feature click events.
- * 
- * @param {FeatureCollection} geojson 
+ *
+ * @param {FeatureCollection} geojson
  */
 function addDataLayer(geojson) {
   let bounds = new google.maps.LatLngBounds();
@@ -76,10 +75,10 @@ function addDataLayer(geojson) {
   map.fitBounds(bounds);
 }
 
-/** 
- * Helper function to read files into ArrayBuffers 
- * 
- * @param {File} file 
+/**
+ * Helper function to read files into ArrayBuffers
+ *
+ * @param {File} file
  * @returns {Promise<{name:str, arrayBuffer:ArrayBuffer}>}
  */
 function readFileAsArrayBuffer(file) {
@@ -98,12 +97,12 @@ function readFileAsArrayBuffer(file) {
   });
 }
 /**
- * Load a shapefile from a list of files or single zip archive. Loads 
- * what it can from what is provided, and reprojects to WGS84 if a .prj 
- * file is present in the FileList. Returns a Promise that resolves to a 
- * GeoJSON FeatureCollection, with properties from the .dbf file, if it
- * was included in the list or zip archive. 
- * 
+ * Load a shapefile from a list of files or single zip archive. Loads
+ * what it can from what is provided, and reprojects to WGS84 if a .prj
+ * file is present in the FileList. Returns a Promise that resolves to a
+ * GeoJSON FeatureCollection (with properties from the .dbf file if it
+ * was included in the list or zip archive).
+ *
  * @param {FileList} files Files selected via a file input form control.
  * @returns {Promise<FeatureCollection>}
  */
